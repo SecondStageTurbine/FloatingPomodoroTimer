@@ -1,0 +1,13 @@
+# Build output
+bin/
+obj/
+
+# Published build — the self-contained exe is ~145 MB, far over GitHub's file limit.
+# Rebuild it with the publish command in README.md.
+dist/
+
+# User/IDE
+.vs/
+*.user
+*.suo
+.idea/
