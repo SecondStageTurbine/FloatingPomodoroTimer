@@ -124,7 +124,6 @@ public partial class App : Application
     // ---- tray ----
     private void SetupTray()
     {
-        var iconPath = Path.Combine(AppContext.BaseDirectory, "Resources", "icon.ico");
         var menu = new Forms.ContextMenuStrip();
         _trayStatus = menu.Items.Add("Floating Pomodoro");
         _trayStatus.Enabled = false;
@@ -143,12 +142,19 @@ public partial class App : Application
 
         _tray = new Forms.NotifyIcon
         {
-            Icon = File.Exists(iconPath) ? new System.Drawing.Icon(iconPath) : System.Drawing.SystemIcons.Application,
+            // Read the app's own embedded icon rather than a loose .ico, so a single-file exe still has a tray icon.
+            Icon = TrayIcon(),
             Text = "Floating Pomodoro",
             Visible = true,
             ContextMenuStrip = menu,
         };
         _tray.MouseClick += (_, a) => { if (a.Button == Forms.MouseButtons.Left) ToggleTimer(); };
+    }
+
+    private static System.Drawing.Icon TrayIcon()
+    {
+        try { return System.Drawing.Icon.ExtractAssociatedIcon(Environment.ProcessPath!) ?? System.Drawing.SystemIcons.Application; }
+        catch { return System.Drawing.SystemIcons.Application; }
     }
 
     // ---- global hotkeys (Ctrl+Alt+...) ----

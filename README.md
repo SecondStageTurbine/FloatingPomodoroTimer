@@ -2,6 +2,12 @@
 
 A tiny always-on-top Pomodoro widget for Windows. C# / .NET 8 / WPF, no dependencies beyond the SDK.
 
+## Download
+
+Grab `FloatingPomodoro.exe` from the [latest release](../../releases/latest) and run it. One file, nothing to install, no .NET needed.
+
+Windows SmartScreen will warn you because the exe is not code-signed. Choose **More info › Run anyway**, or build it yourself from source below.
+
 ```
 Pomodoro/
 ├── BibleBuild.txt          the build guide this was built from
@@ -24,7 +30,7 @@ Self-contained single exe (no .NET install needed on the target machine):
 dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ..\dist
 ```
 
-Logic self-check (cycle, stats, settings clamping): `FloatingPomodoro.exe --selftest` returns exit code 0 on pass.
+Self-check (timer cycle, stats bucketing, settings clamping, alarm unpacking, and that every window loads): `FloatingPomodoro.exe --selftest` returns exit code 0 on pass. Details also land in `%TEMP%\FloatingPomodoro.selftest.txt`, since a windowed app has no console.
 
 Installer: install [Inno Setup 6](https://jrsoftware.org/isinfo.php), run `ISCC installer.iss` after publishing. Output: `dist\FloatingPomodoroSetup.exe`.
 
@@ -49,6 +55,12 @@ Tasks, statistics and settings each open in their own small window. Pick a task 
 
 Everything is local JSON in `%LOCALAPPDATA%\FloatingPomodoro\` (`settings.json`, `tasks.json`, `history.json`). Delete the folder to reset. No account, no network.
 
+The five alarm sounds are embedded in the exe and unpacked to `%LOCALAPPDATA%\FloatingPomodoro\sounds\` on first run. Drop your own `.wav` files in there and they appear in the alarm list.
+
 ## Not in v1 (by design)
 
 Cloud sync, integrations, custom hotkey bindings, a tick sound, code signing (unsigned builds trigger SmartScreen on other machines).
+
+## License
+
+[MIT](LICENSE).

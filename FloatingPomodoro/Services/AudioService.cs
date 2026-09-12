@@ -7,7 +7,29 @@ namespace FloatingPomodoro.Services;
 
 public class AudioService
 {
-    public static readonly string SoundDir = Path.Combine(AppContext.BaseDirectory, "Resources");
+    public static readonly string SoundDir = Path.Combine(Storage.Dir, "sounds");
+
+    /// The alarms are embedded in the exe so it ships as one downloadable file.
+    /// Unpack them once beside the settings, where the user can also drop their own .wav files.
+    static AudioService()
+    {
+        try
+        {
+            var asm = typeof(AudioService).Assembly;
+            const string prefix = "FloatingPomodoro.Resources.";
+            Directory.CreateDirectory(SoundDir);
+            foreach (var res in asm.GetManifestResourceNames())
+            {
+                if (!res.StartsWith(prefix, StringComparison.Ordinal) || !res.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)) continue;
+                var file = Path.Combine(SoundDir, res[prefix.Length..]);
+                if (File.Exists(file)) continue;
+                using var src = asm.GetManifestResourceStream(res)!;
+                using var dst = File.Create(file);
+                src.CopyTo(dst);
+            }
+        }
+        catch { /* a silent alarm beats no app */ }
+    }
 
     public static string[] Sounds => Directory.Exists(SoundDir)
         ? Directory.GetFiles(SoundDir, "*.wav").Select(f => Path.GetFileName(f)).OrderBy(f => f).ToArray()

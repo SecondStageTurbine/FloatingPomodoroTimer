@@ -51,6 +51,11 @@ public static class SelfTest
         s.Sanitize();
         Check(s.LongBreakInterval == 1 && s.Opacity == 0.7 && s.Theme == "System", "sanitize clamps");
 
+        // Alarms must unpack from the embedded resources, or a single-file exe has a silent alarm.
+        var sounds = Services.AudioService.Sounds;
+        Check(sounds.Length >= 5, $"alarms unpacked to {Services.AudioService.SoundDir} (found {sounds.Length})");
+        Check(Array.IndexOf(sounds, vm.Settings.Alarm) >= 0, $"default alarm '{vm.Settings.Alarm}' is among the unpacked sounds");
+
         // Window smoke: every XAML window loads, binds and closes without throwing.
         // (SettingsWindow.Closed re-saves the unchanged settings; that is the only disk write here.)
         foreach (var make in new Func<System.Windows.Window>[] { () => new Views.TimerWindow(vm), () => new Views.SettingsWindow(vm), () => new Views.TaskWindow(vm), () => new Views.StatsWindow(vm) })

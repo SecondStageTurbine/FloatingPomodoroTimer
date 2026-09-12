@@ -16,8 +16,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="Resources\*.wav" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="Resources\icon.ico" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Embedded, not copied: the published exe must work as a single downloadable file.
+         AudioService unpacks these on first run; the tray icon comes from ApplicationIcon. -->
+    <EmbeddedResource Include="Resources\*.wav" />
   </ItemGroup>
 
 </Project>
