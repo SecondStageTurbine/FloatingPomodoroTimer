@@ -28,12 +28,7 @@ public static class Storage
     public static void SaveTasks(List<TaskItem> t) => Save("tasks.json", t);
 
     public static List<PomodoroSession> LoadHistory() => Load<List<PomodoroSession>>("history.json") ?? new();
-    public static void AppendHistory(PomodoroSession s)
-    {
-        var h = LoadHistory();
-        h.Add(s);
-        Save("history.json", h);
-    }
+    public static void SaveHistory(List<PomodoroSession> h) => Save("history.json", h);
 
     private static T? Load<T>(string file)
     {

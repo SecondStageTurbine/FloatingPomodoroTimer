@@ -1,10 +1,7 @@
-using System;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using FloatingPomodoro.Models;
-using FloatingPomodoro.Services;
 using FloatingPomodoro.ViewModels;
 
 namespace FloatingPomodoro.Views;
@@ -37,19 +34,11 @@ public partial class TimerWindow : Window
         Top = wa.Bottom - ActualHeight - 24;
     }
 
-    public void SavePosition()
-    {
-        if (!IsLoaded) return;
-        _vm.Settings.WindowLeft = Left;
-        _vm.Settings.WindowTop = Top;
-        Storage.SaveSettings(_vm.Settings);
-    }
-
     private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ClickCount == 2) { _vm.MiniMode = !_vm.MiniMode; return; }
         DragMove();
-        SavePosition();
+        if (IsLoaded) _vm.SaveWindowPosition(Left, Top);
     }
 
     private void Window_KeyDown(object sender, KeyEventArgs e)

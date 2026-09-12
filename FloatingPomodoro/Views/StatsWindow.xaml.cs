@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using FloatingPomodoro.Models;
 using FloatingPomodoro.Services;
 using FloatingPomodoro.ViewModels;
 
@@ -18,27 +17,27 @@ public partial class StatsWindow : Window
     {
         InitializeComponent();
         _vm = vm;
-        DataContext = vm;
     }
 
     private void Window_Activated(object sender, EventArgs e) => Refresh();
 
     private void Refresh()
     {
-        var history = Storage.LoadHistory();
-        var today = Stats.Summary(history, DateTime.Today, DateTime.Today.AddDays(1));
+        // The ViewModel owns history; re-reading the file here would be a second source of truth.
+        var history = _vm.History;
+        var today = Stats.Today(history);
         TodayTime.Text = Stats.Hm(today.Minutes);
-        TodayPomodoros.Text = $"{today.Pomodoros} Pomodoro{(today.Pomodoros == 1 ? "" : "s")} completed";
-        TodayTasks.Text = $"{today.Tasks} task{(today.Tasks == 1 ? "" : "s")} worked on";
+        TodayPomodoros.Text = $"{Stats.Plural(today.Pomodoros, "Pomodoro")} completed";
+        TodayTasks.Text = $"{Stats.Plural(today.Tasks, "task")} worked on";
         var all = Stats.Summary(history, DateTime.MinValue, DateTime.MaxValue);
-        TotalLine.Text = $"All time: {Stats.Hm(all.Minutes)} · {all.Pomodoros} Pomodoros";
+        TotalLine.Text = $"All time: {Stats.Hm(all.Minutes)} · {Stats.Plural(all.Pomodoros, "Pomodoro")}";
 
         var week = Stats.Daily(history, 7);
-        WeekSummary.Text = $"{Stats.Hm(week.Sum(d => d.Minutes))} · {week.Sum(d => d.Pomodoros)} Pomodoros this week";
+        WeekSummary.Text = $"{Stats.Hm(week.Sum(d => d.Minutes))} · {Stats.Plural(week.Sum(d => d.Pomodoros), "Pomodoro")} this week";
         WeekBars.ItemsSource = Bars(week, d => d.Day.ToString("ddd"));
 
         var month = Stats.Daily(history, 30);
-        MonthSummary.Text = $"{Stats.Hm(month.Sum(d => d.Minutes))} · {month.Sum(d => d.Pomodoros)} Pomodoros in 30 days";
+        MonthSummary.Text = $"{Stats.Hm(month.Sum(d => d.Minutes))} · {Stats.Plural(month.Sum(d => d.Pomodoros), "Pomodoro")} in 30 days";
         MonthBars.ItemsSource = Bars(month, d => d.Day.ToString("dd MMM"));
     }
 

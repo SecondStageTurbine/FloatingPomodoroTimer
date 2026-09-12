@@ -40,11 +40,12 @@ public static class SelfTest
             new() { Mode = TimerMode.Focus, DurationMinutes = 50, CompletedAt = DateTime.Today.AddDays(-1).AddHours(9), TaskId = "b" },
             new() { Mode = TimerMode.Focus, DurationMinutes = 50, CompletedAt = DateTime.Today.AddDays(-10) },
         };
-        var today = Stats.Summary(h, DateTime.Today, DateTime.Today.AddDays(1));
+        var today = Stats.Today(h);
         Check(today == (50, 2, 1), $"today summary {today}");
         var week = Stats.Daily(h, 7);
         Check(week.Count == 7 && week[^1].Minutes == 50 && week[^2].Minutes == 50 && week.Sum(d => d.Pomodoros) == 3, "7-day buckets");
         Check(Stats.Hm(135) == "2h 15m" && Stats.Hm(45) == "45m", "h/m formatting");
+        Check(Stats.Plural(1, "Pomodoro") == "1 Pomodoro" && Stats.Plural(2, "task") == "2 tasks", "pluralisation");
 
         // Settings sanitize.
         var s = new AppSettings { LongBreakInterval = 0, Opacity = 0.1, Theme = "Neon" };
@@ -56,8 +57,10 @@ public static class SelfTest
         Check(sounds.Length >= 5, $"alarms unpacked to {Services.AudioService.SoundDir} (found {sounds.Length})");
         Check(Array.IndexOf(sounds, vm.Settings.Alarm) >= 0, $"default alarm '{vm.Settings.Alarm}' is among the unpacked sounds");
 
-        // Window smoke: every XAML window loads, binds and closes without throwing.
+        // Window smoke: every XAML window loads, binds and closes without throwing. Theme first, the
+        // way startup does, so the brush resources the windows reference are actually populated.
         // (SettingsWindow.Closed re-saves the unchanged settings; that is the only disk write here.)
+        App.Current.ApplyTheme(vm.Settings.Theme, vm.Mode);
         foreach (var make in new Func<System.Windows.Window>[] { () => new Views.TimerWindow(vm), () => new Views.SettingsWindow(vm), () => new Views.TaskWindow(vm), () => new Views.StatsWindow(vm) })
         {
             try

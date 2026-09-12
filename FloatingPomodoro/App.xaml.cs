@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -25,8 +25,7 @@ public partial class App : Application
     private Forms.NotifyIcon? _tray;
     private Forms.ToolStripItem? _trayStatus;
     private Hotkeys? _hotkeys;
-    private SolidColorBrush _accent = null!;
-    private readonly Dictionary<Type, Window> _open = new();
+    private SolidColorBrush? _accent;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -34,19 +33,15 @@ public partial class App : Application
         if (Array.IndexOf(e.Args, "--selftest") >= 0) { Environment.Exit(SelfTest.Run()); return; }
 
         VM = new TimerViewModel();
-        Resources["AccentBrush"] = _accent = new SolidColorBrush(AccentFor(VM.Mode));
         ApplyTheme();
 
         VM.PropertyChanged += (_, a) =>
         {
             if (a.PropertyName == nameof(VM.Mode)) AnimateAccent(VM.Mode);
-            else if (a.PropertyName == nameof(VM.TimerText) && _tray != null) _tray.Text = $"{VM.TimerText} — {VM.ModeTitle}";
+            else if (a.PropertyName == nameof(VM.TimerText) && _tray != null) _tray.Text = VM.StatusText;
         };
         VM.SettingsApplied += ApplyTheme;
-        VM.Notify += (title, msg) =>
-        {
-            if (VM.Settings.DesktopNotifications) _tray?.ShowBalloonTip(5000, title, msg, Forms.ToolTipIcon.None);
-        };
+        VM.Notify += (title, msg) => _tray?.ShowBalloonTip(5000, title, msg, Forms.ToolTipIcon.None);
 
         _win = new TimerWindow(VM);
         _win.Show();
@@ -73,39 +68,40 @@ public partial class App : Application
     public void ShowTasks() => ShowWindow(() => new TaskWindow(VM));
     public void ShowStats() => ShowWindow(() => new StatsWindow(VM));
 
+    /// Application.Windows already tracks what is open, so there is no second registry to keep in sync.
     private void ShowWindow<T>(Func<T> make) where T : Window
     {
-        if (_open.TryGetValue(typeof(T), out var existing)) { existing.Activate(); return; }
-        var w = make();
-        _open[typeof(T)] = w;
-        w.Closed += (_, _) => _open.Remove(typeof(T));
-        w.Show();
+        var w = Windows.OfType<T>().FirstOrDefault() ?? make();
+        if (!w.IsVisible) w.Show();
         w.Activate();
     }
 
     public void ExitApp()
     {
         Exiting = true;
-        _win.SavePosition();
         Shutdown();
     }
 
     // ---- theme ----
-    private void ApplyTheme()
+    private void ApplyTheme() => ApplyTheme(VM.Settings.Theme, VM.Mode);
+
+    /// The only place the palettes live; App.xaml declares the keys with no colours.
+    internal void ApplyTheme(string theme, TimerMode mode)
     {
-        var t = VM.Settings.Theme;
-        bool light = t == "Light" || (t == "System" && WinIntegration.SystemIsLight());
+        bool light = theme == "Light" || (theme == "System" && WinIntegration.SystemIsLight());
         Resources["BgBrush"] = Brush(light ? "#F4F4F6" : "#202124");
         Resources["SurfaceBrush"] = Brush(light ? "#E1E1E6" : "#2C2D31");
         Resources["FgBrush"] = Brush(light ? "#1E1F22" : "#FFFFFF");
         Resources["Fg2Brush"] = Brush(light ? "#6B6B70" : "#A8A8A8");
+        // Seed once; re-theming must not replace a brush that AnimateAccent may be animating.
+        if (_accent == null) Resources["AccentBrush"] = _accent = new SolidColorBrush(AccentFor(mode));
     }
 
     /// WPF freezes a resource brush once consumers use it, and a frozen brush cannot be animated.
     /// So each mode change installs a fresh brush that fades from the old colour; DynamicResource consumers pick it up.
     private void AnimateAccent(TimerMode mode)
     {
-        var b = new SolidColorBrush(_accent.Color);
+        var b = new SolidColorBrush(_accent?.Color ?? AccentFor(mode));
         b.BeginAnimation(SolidColorBrush.ColorProperty, new ColorAnimation(AccentFor(mode), TimeSpan.FromMilliseconds(200)));
         _accent = b;
         Resources["AccentBrush"] = b;
@@ -138,7 +134,7 @@ public partial class App : Application
         menu.Items.Add("Settings", null, (_, _) => ShowSettings());
         menu.Items.Add(new Forms.ToolStripSeparator());
         menu.Items.Add("Exit", null, (_, _) => ExitApp());
-        menu.Opening += (_, _) => _trayStatus.Text = $"{VM.TimerText} — {VM.ModeTitle}";
+        menu.Opening += (_, _) => _trayStatus.Text = VM.StatusText;
 
         _tray = new Forms.NotifyIcon
         {

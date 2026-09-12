@@ -9,7 +9,7 @@ public record DayStat(DateTime Day, int Minutes, int Pomodoros);
 
 public static class Stats
 {
-    public static IEnumerable<PomodoroSession> Focus(IEnumerable<PomodoroSession> h) =>
+    private static IEnumerable<PomodoroSession> Focus(IEnumerable<PomodoroSession> h) =>
         h.Where(s => s.Mode == TimerMode.Focus);
 
     public static (int Minutes, int Pomodoros, int Tasks) Summary(IEnumerable<PomodoroSession> h, DateTime from, DateTime to)
@@ -17,6 +17,9 @@ public static class Stats
         var f = Focus(h).Where(s => s.CompletedAt >= from && s.CompletedAt < to).ToList();
         return (f.Sum(s => s.DurationMinutes), f.Count, f.Select(s => s.TaskId).Where(t => t != null).Distinct().Count());
     }
+
+    public static (int Minutes, int Pomodoros, int Tasks) Today(IEnumerable<PomodoroSession> h) =>
+        Summary(h, DateTime.Today, DateTime.Today.AddDays(1));
 
     /// One entry per day for the last `days` days ending today.
     public static List<DayStat> Daily(IEnumerable<PomodoroSession> h, int days)
@@ -31,4 +34,6 @@ public static class Stats
     }
 
     public static string Hm(int minutes) => minutes >= 60 ? $"{minutes / 60}h {minutes % 60}m" : $"{minutes}m";
+
+    public static string Plural(int n, string noun) => $"{n} {noun}{(n == 1 ? "" : "s")}";
 }

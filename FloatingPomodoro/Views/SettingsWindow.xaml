@@ -5,7 +5,6 @@
         Style="{DynamicResource Dialog}" WindowStartupLocation="CenterScreen"
         Title="Settings" Width="400" SizeToContent="Height" Closed="Window_Closed">
     <Window.Resources>
-        <Style TargetType="StackPanel"><Setter Property="TextElement.Foreground" Value="{DynamicResource FgBrush}"/></Style>
         <Style TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
@@ -31,7 +30,7 @@
         </Style>
     </Window.Resources>
 
-    <TabControl Margin="12" Background="{DynamicResource BgBrush}" Foreground="{DynamicResource FgBrush}" BorderBrush="{DynamicResource SurfaceBrush}" MinHeight="300">
+    <TabControl MinHeight="300">
         <TabItem Header="Timer">
             <StackPanel Margin="14,8">
                 <DockPanel><TextBox DockPanel.Dock="Right" Text="{Binding Settings.FocusMinutes, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="Pomodoro (minutes)"/></DockPanel>

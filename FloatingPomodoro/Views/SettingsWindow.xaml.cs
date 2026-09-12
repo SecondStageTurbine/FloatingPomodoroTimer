@@ -24,8 +24,7 @@ public partial class SettingsWindow : Window
         Shortcuts.ItemsSource = App.Current.HotkeyLines;
     }
 
-    private void Test_Click(object sender, RoutedEventArgs e) =>
-        _vm.Audio.Play(_vm.Settings.Alarm, _vm.Settings.AlarmVolume, 1);
+    private void Test_Click(object sender, RoutedEventArgs e) => _vm.TestAlarm();
 
     private void DataPath_Click(object sender, MouseButtonEventArgs e)
     {
@@ -39,7 +38,7 @@ public partial class SettingsWindow : Window
 
     private void Window_Closed(object sender, EventArgs e)
     {
-        _vm.Audio.Stop();
+        _vm.StopAlarm();
         _vm.ApplySettings();
     }
 }

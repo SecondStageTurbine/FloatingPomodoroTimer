@@ -4,15 +4,27 @@
              xmlns:local="clr-namespace:FloatingPomodoro"
              ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
-        <!-- Theme brushes: replaced at runtime by App.ApplyTheme; accent is animated on mode change. -->
-        <SolidColorBrush x:Key="BgBrush" Color="#202124"/>
-        <SolidColorBrush x:Key="SurfaceBrush" Color="#2C2D31"/>
-        <SolidColorBrush x:Key="FgBrush" Color="#FFFFFF"/>
-        <SolidColorBrush x:Key="Fg2Brush" Color="#A8A8A8"/>
-        <SolidColorBrush x:Key="AccentBrush" Color="#E76F51"/>
+        <!-- Keys only. The palettes live in App.ApplyTheme, which fills these in before any window
+             is created; putting colours here too would give one palette two homes, and only one is live. -->
+        <SolidColorBrush x:Key="BgBrush"/>
+        <SolidColorBrush x:Key="SurfaceBrush"/>
+        <SolidColorBrush x:Key="FgBrush"/>
+        <SolidColorBrush x:Key="Fg2Brush"/>
+        <SolidColorBrush x:Key="AccentBrush"/>
 
         <local:BoolToVis x:Key="Vis"/>
         <local:BoolToVis x:Key="VisInv" Invert="True"/>
+
+        <!-- Shared by the Settings / Tasks / Stats dialogs. -->
+        <Style TargetType="StackPanel">
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource FgBrush}"/>
+        </Style>
+        <Style TargetType="TabControl">
+            <Setter Property="Margin" Value="12"/>
+            <Setter Property="Background" Value="{DynamicResource BgBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource FgBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBrush}"/>
+        </Style>
 
         <Style x:Key="IconButton" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>

@@ -4,7 +4,6 @@
         Style="{DynamicResource Dialog}" WindowStartupLocation="CenterScreen"
         Title="Statistics" Width="380" SizeToContent="Height" Activated="Window_Activated">
     <Window.Resources>
-        <Style TargetType="StackPanel"><Setter Property="TextElement.Foreground" Value="{DynamicResource FgBrush}"/></Style>
         <DataTemplate x:Key="BarRow">
             <DockPanel Margin="0,2">
                 <TextBlock Text="{Binding Label}" Width="36" Style="{StaticResource Muted}" FontSize="11" VerticalAlignment="Center"/>
@@ -14,7 +13,7 @@
         </DataTemplate>
     </Window.Resources>
 
-    <TabControl Margin="12" Background="{DynamicResource BgBrush}" Foreground="{DynamicResource FgBrush}" BorderBrush="{DynamicResource SurfaceBrush}" MinHeight="260">
+    <TabControl MinHeight="260">
         <TabItem Header="Today">
             <StackPanel Margin="16,12">
                 <TextBlock x:Name="TodayTime" FontSize="34" FontWeight="SemiBold"/>

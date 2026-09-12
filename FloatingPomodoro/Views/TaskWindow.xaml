@@ -2,10 +2,10 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Style="{DynamicResource Dialog}" WindowStartupLocation="CenterScreen"
-        Title="Tasks" Width="360" Height="440" Activated="Window_Activated">
+        Title="Tasks" Width="360" Height="440">
     <DockPanel Margin="16,12,16,14">
         <TextBlock DockPanel.Dock="Top" Style="{StaticResource SectionLabel}" Text="TODAY" Margin="0"/>
-        <TextBlock DockPanel.Dock="Top" x:Name="Estimate" Style="{StaticResource Muted}" FontSize="12" Margin="0,2,0,8"/>
+        <TextBlock DockPanel.Dock="Top" Text="{Binding PendingEstimate}" Style="{StaticResource Muted}" FontSize="12" Margin="0,2,0,8"/>
 
         <!-- Add task row -->
         <Grid DockPanel.Dock="Bottom" Margin="0,10,0,0">
