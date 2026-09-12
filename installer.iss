@@ -3,7 +3,7 @@
 ; 2. ISCC installer.iss  ->  dist\FloatingPomodoroSetup.exe
 
 #define AppName "Floating Pomodoro"
-#define AppVersion "1.0.1"
+#define AppVersion "1.0.2"
 #define AppExe "FloatingPomodoro.exe"
 
 [Setup]
