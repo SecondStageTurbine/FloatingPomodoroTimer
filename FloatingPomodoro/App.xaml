@@ -15,28 +15,19 @@
         <local:BoolToVis x:Key="Vis"/>
         <local:BoolToVis x:Key="VisInv" Invert="True"/>
 
-        <!-- Shared by the Settings / Tasks / Stats dialogs. -->
-        <Style TargetType="StackPanel">
+        <!-- Light text for a dialog's own content. This MUST stay keyed and be applied by hand:
+             as a keyless implicit style it also matched the StackPanel that ComboBox uses as its
+             items host inside its control template, which painted every dropdown row in this
+             colour on Windows' light popup chrome and made the options invisible. Anything
+             app-wide and inheritable leaks into popups the same way, so do not set text colour
+             on Window either. SelfTest asserts no implicit Panel style comes back. -->
+        <Style x:Key="Pane" TargetType="StackPanel">
             <Setter Property="TextElement.Foreground" Value="{DynamicResource FgBrush}"/>
         </Style>
 
-        <!-- Dropdowns, menus and tooltips render in popups that keep Windows' own light chrome,
-             but they inherit their text colour from whatever opened them. On these dark surfaces
-             that is light-on-light and unreadable, so pin each to the matching system text colour
-             rather than to the app palette; the chrome is the system's, so the ink should be too. -->
-        <Style TargetType="ComboBoxItem">
-            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-        </Style>
-        <Style TargetType="MenuItem">
-            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.MenuTextBrushKey}}"/>
-        </Style>
-        <Style TargetType="ToolTip">
-            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.InfoTextBrushKey}}"/>
-        </Style>
         <Style TargetType="TabControl">
             <Setter Property="Margin" Value="12"/>
             <Setter Property="Background" Value="{DynamicResource BgBrush}"/>
-            <Setter Property="Foreground" Value="{DynamicResource FgBrush}"/>
             <Setter Property="BorderBrush" Value="{DynamicResource SurfaceBrush}"/>
         </Style>
 

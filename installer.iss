@@ -3,7 +3,7 @@
 ; 2. ISCC installer.iss  ->  dist\FloatingPomodoroSetup.exe
 
 #define AppName "Floating Pomodoro"
-#define AppVersion "1.0.2"
+#define AppVersion "1.0.3"
 #define AppExe "FloatingPomodoro.exe"
 
 [Setup]
@@ -14,6 +14,7 @@ DefaultDirName={autopf}\{#AppName}
 DefaultGroupName={#AppName}
 OutputDir=dist
 OutputBaseFilename=FloatingPomodoroSetup
+VersionInfoVersion={#AppVersion}
 SetupIconFile=FloatingPomodoro\Resources\icon.ico
 UninstallDisplayIcon={app}\{#AppExe}
 Compression=lzma2
@@ -21,7 +22,9 @@ SolidCompression=yes
 WizardStyle=modern
 ArchitecturesInstallIn64BitMode=x64compatible
 PrivilegesRequiredOverridesAllowed=dialog
-CloseApplications=yes
+; The widget cancels WM_CLOSE to stay in the tray, so a polite close cannot free the exe
+; on upgrade. All state is written as it changes, so terminating loses nothing.
+CloseApplications=force
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a desktop shortcut"
@@ -29,7 +32,6 @@ Name: "startup"; Description: "Launch {#AppName} at startup"
 
 [Files]
 Source: "dist\{#AppExe}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "dist\Resources\*"; DestDir: "{app}\Resources"; Flags: ignoreversion recursesubdirs
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExe}"

@@ -57,9 +57,17 @@ public static class SelfTest
         Check(sounds.Length >= 5, $"alarms unpacked to {Services.AudioService.SoundDir} (found {sounds.Length})");
         Check(Array.IndexOf(sounds, vm.Settings.Alarm) >= 0, $"default alarm '{vm.Settings.Alarm}' is among the unpacked sounds");
 
+        // A keyless implicit style on a panel type also matches the panels inside control templates.
+        // That is how the dialogs' light text reached ComboBox's items host and painted every dropdown
+        // row invisible on Windows' light popup chrome. Keep such styles keyed and applied by hand.
+        var leaky = System.Windows.Application.Current.Resources.Keys.OfType<Type>()
+            .Where(t => typeof(System.Windows.Controls.Panel).IsAssignableFrom(t)).Select(t => t.Name).ToList();
+        Check(leaky.Count == 0, $"app-wide implicit Panel style leaks into control templates: {string.Join(", ", leaky)}");
+
         // Window smoke: every XAML window loads, binds and closes without throwing. Theme first, the
         // way startup does, so the brush resources the windows reference are actually populated.
-        // (SettingsWindow.Closed re-saves the unchanged settings; that is the only disk write here.)
+        // (SettingsWindow.Closed re-saves settings and rewrites the Run key with the value it just
+        // read back from that key, so this stays a no-op on both disk and registry.)
         App.Current.ApplyTheme(vm.Settings.Theme, vm.Mode);
         foreach (var make in new Func<System.Windows.Window>[] { () => new Views.TimerWindow(vm), () => new Views.SettingsWindow(vm), () => new Views.TaskWindow(vm), () => new Views.StatsWindow(vm) })
         {

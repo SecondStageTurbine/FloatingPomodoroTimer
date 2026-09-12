@@ -32,7 +32,7 @@
 
     <TabControl MinHeight="300">
         <TabItem Header="Timer">
-            <StackPanel Margin="14,8">
+            <StackPanel Style="{StaticResource Pane}" Margin="14,8">
                 <DockPanel><TextBox DockPanel.Dock="Right" Text="{Binding Settings.FocusMinutes, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="Pomodoro (minutes)"/></DockPanel>
                 <DockPanel><TextBox DockPanel.Dock="Right" Text="{Binding Settings.ShortBreakMinutes, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="Short break (minutes)"/></DockPanel>
                 <DockPanel><TextBox DockPanel.Dock="Right" Text="{Binding Settings.LongBreakMinutes, UpdateSourceTrigger=PropertyChanged}"/><TextBlock Text="Long break (minutes)"/></DockPanel>
@@ -44,7 +44,7 @@
         </TabItem>
 
         <TabItem Header="Appearance">
-            <StackPanel Margin="14,8">
+            <StackPanel Style="{StaticResource Pane}" Margin="14,8">
                 <DockPanel>
                     <ComboBox DockPanel.Dock="Right" ItemsSource="{x:Static local:SettingsWindow.Themes}" SelectedItem="{Binding Settings.Theme}"/>
                     <TextBlock Text="Theme"/>
@@ -62,7 +62,7 @@
         </TabItem>
 
         <TabItem Header="Sound">
-            <StackPanel Margin="14,8">
+            <StackPanel Style="{StaticResource Pane}" Margin="14,8">
                 <DockPanel>
                     <ComboBox DockPanel.Dock="Right" ItemsSource="{x:Static local:SettingsWindow.Sounds}" SelectedItem="{Binding Settings.Alarm}"/>
                     <TextBlock Text="Alarm"/>
@@ -82,7 +82,7 @@
         </TabItem>
 
         <TabItem Header="General">
-            <StackPanel Margin="14,8">
+            <StackPanel Style="{StaticResource Pane}" Margin="14,8">
                 <CheckBox Content="Launch with Windows" IsChecked="{Binding Settings.LaunchAtStartup}" Margin="0"/>
                 <CheckBox Content="Keep running in the tray when the timer is closed" IsChecked="{Binding Settings.MinimizeToTray}"/>
                 <TextBlock Style="{StaticResource SectionLabel}" Text="KEYBOARD SHORTCUTS" Margin="0,18,0,6"/>
@@ -97,6 +97,7 @@
                 <TextBlock Text="Space · R · S · M · Esc  —  when the timer has focus" Margin="0,8,0,0"/>
                 <TextBlock Style="{StaticResource SectionLabel}" Text="DATA" Margin="0,18,0,4"/>
                 <TextBlock Style="{StaticResource Muted}" x:Name="DataPath" FontSize="11" TextWrapping="Wrap" Cursor="Hand" MouseLeftButtonUp="DataPath_Click" ToolTip="Open folder"/>
+                <TextBlock Style="{StaticResource Muted}" x:Name="VersionText" FontSize="11" Margin="0,10,0,0"/>
             </StackPanel>
         </TabItem>
     </TabControl>

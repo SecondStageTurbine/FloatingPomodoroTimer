@@ -34,6 +34,8 @@ public class TimerViewModel : Observable
         Settings.Sanitize();
         Tasks = new ObservableCollection<TaskItem>(Storage.LoadTasks());
         History = Storage.LoadHistory();
+        // Read the Run key rather than trusting settings.json, which the installer never writes.
+        try { Settings.LaunchAtStartup = WinIntegration.LaunchesAtStartup(); } catch { }
 
         // The service owns Remaining and IsRunning; the VM just re-publishes what they derive.
         _timer.Tick += _ => RaiseAll(nameof(Remaining), nameof(TimerText), nameof(Progress),

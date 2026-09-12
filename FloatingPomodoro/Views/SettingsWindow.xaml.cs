@@ -21,6 +21,7 @@ public partial class SettingsWindow : Window
         _vm = vm;
         DataContext = vm;
         DataPath.Text = Storage.Dir;
+        VersionText.Text = $"Version {typeof(App).Assembly.GetName().Version?.ToString(3)}";
         Shortcuts.ItemsSource = App.Current.HotkeyLines;
     }
 

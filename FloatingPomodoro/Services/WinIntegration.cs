@@ -8,6 +8,14 @@ public static class WinIntegration
     private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
     private const string Name = "FloatingPomodoro";
 
+    /// Whether the Run key currently has us. This, not settings.json, is the truth: the
+    /// installer can write it too, and a stale `false` in settings would silently delete it.
+    public static bool LaunchesAtStartup()
+    {
+        using var k = Registry.CurrentUser.OpenSubKey(RunKey);
+        return k?.GetValue(Name) != null;
+    }
+
     /// "Launch with Windows" via the HKCU Run key.
     public static void SetLaunchAtStartup(bool enabled)
     {
